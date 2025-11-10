@@ -1,0 +1,29 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ProductStoreWebAPI.Model.Users
+{
+    public class User
+    {
+
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid Id { get; set; }
+
+        [Required]
+        public string? UserName { get; set; }
+
+        public required string? Password { get; set; }
+
+        [Column("person_id")]
+        public Guid PersonID { get; set; }
+
+        public required Person Person { get; set; }
+
+        [Column("role_id")]
+        public Guid RoleID { get; set; }
+
+        public required UserRole UserRole { get; set; }
+
+    }
+}
