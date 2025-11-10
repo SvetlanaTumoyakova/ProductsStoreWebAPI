@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ProductStoreWebAPI.Model.Products
+namespace ProductsStore.Models.Products
 {
-    public class ProductAttribute
+    public class ProductAttributes
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

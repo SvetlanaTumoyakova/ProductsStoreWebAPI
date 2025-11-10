@@ -1,7 +1,7 @@
-﻿using ProductStoreWebAPI.Model.Users;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using ProductStoreWebAPI.Model.Products;
+using ProductsStore.Models.Products;
+using ProductsStore.Models.Users;
 
 namespace ProductsStore.Models.Carts
 {

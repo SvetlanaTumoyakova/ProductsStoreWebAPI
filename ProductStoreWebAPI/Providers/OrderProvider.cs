@@ -1,8 +1,9 @@
-﻿using ProductStoreWebAPI.Model.Carts;
-using ProductStoreWebAPI.Model.Orders;
-using ProductStoreWebAPI.Model.Products;
+﻿using ProductsStore.DAL;
+using ProductsStore.Models.Carts;
+using ProductsStore.Models.Orders;
+using ProductsStore.Models.Products;
 
-namespace ProductStoreWebAPI.Providers
+namespace ProductsStore.WebAPI.Providers
 {
     public class OrderProvider
     {
@@ -12,27 +13,27 @@ namespace ProductStoreWebAPI.Providers
             _dataBaseContext = dataBaseContext;
         }
 
-        public async Task<bool> SaveOrder(Guid cartId)
-        {
-            Cart savedCart = await _dataBaseContext.Carts
-                                      .Where(un => un.Id == cartId)
-                                      .FirstAsync();
-            Order savedOrder = new Order
-            {
-                User = savedCart.User,
-                Products = new List<Product>(savedCart.Products),
-            };
-            await _dataBaseContext.Orders.AddAsync(savedOrder);
-            await _dataBaseContext.SaveChangesAsync();
-            return true;
-        }
+        //public async Task<bool> SaveOrder(Guid cartId)
+        //{
+        //    Cart savedCart = await _dataBaseContext.Carts
+        //                              .Where(un => un.Id == cartId)
+        //                              .FirstAsync();
+        //    Order savedOrder = new Order
+        //    {
+        //        User = savedCart.User,
+        //        Products = new List<Product>(savedCart.Products),
+        //    };
+        //    await _dataBaseContext.Orders.AddAsync(savedOrder);
+        //    await _dataBaseContext.SaveChangesAsync();
+        //    return true;
+        //}
 
-        public async Task<List<Order>> GetOrders(Guid userID)
-        {
-            var res = _dataBaseContext.Orders
-                                .Where(un => un.UserID == userID).Include(un => un.Products);
+        //public async Task<List<Order>> GetOrders(Guid userID)
+        //{
+        //    var res = _dataBaseContext.Orders
+        //                        .Where(un => un.UserID == userID).Include(un => un.Products);
 
-            return await res.ToListAsync();
-        }
+        //    return await res.ToListAsync();
+        //}
     }
 }

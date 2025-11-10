@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ProductStoreWebAPI.Model.Users
+namespace ProductsStore.Models.Users
 {
     public class User
     {

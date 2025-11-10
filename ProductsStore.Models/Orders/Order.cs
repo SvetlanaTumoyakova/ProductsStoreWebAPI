@@ -1,9 +1,9 @@
-﻿using ProductStoreWebAPI.Model.Products;
-using ProductStoreWebAPI.Model.Users;
+﻿using ProductsStore.Models.Products;
+using ProductsStore.Models.Users;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ProductStoreWebAPI.Model.Orders
+namespace ProductsStore.Models.Orders
 {
     public class Order
     {

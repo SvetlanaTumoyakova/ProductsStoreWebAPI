@@ -1,11 +1,10 @@
 ﻿using ProductsStore.Models.Carts;
-using ProductStoreWebAPI.Model.Orders;
-using ProductStoreWebAPI.Model.Users;
+using ProductsStore.Models.Orders;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace ProductStoreWebAPI.Model.Products
+namespace ProductsStore.Models.Products
 {
     public class Product
     {
@@ -24,7 +23,7 @@ namespace ProductStoreWebAPI.Model.Products
         public required Category Category { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<ProductAttribute> ProductAttributes { get; set; } = new List<ProductAttribute>();
+        public virtual ICollection<ProductAttributes> ProductAttributes { get; set; } = new List<ProductAttributes>();
 
         [JsonIgnore]
         public virtual ICollection<Cart> Carts { get; set; } = new List<Cart>();
