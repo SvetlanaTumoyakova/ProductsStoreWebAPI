@@ -10,7 +10,7 @@ namespace ProductsStore.DAL
     {
         public DbSet<Person> Persons { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<User> UserRoles { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
 
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
@@ -21,7 +21,6 @@ namespace ProductsStore.DAL
 
         public DataBaseContext(DbContextOptions<DataBaseContext> options) : base(options)
         {
-            Database.EnsureCreated();
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -38,7 +37,7 @@ namespace ProductsStore.DAL
             modelBuilder.Entity<Order>()
                 .HasMany(c => c.Products)
                 .WithMany(p => p.Orders)
-                .UsingEntity(j => j.ToTable("OrderProducts")); 
+                .UsingEntity(j => j.ToTable("OrderProducts"));
         }
     }
 }
