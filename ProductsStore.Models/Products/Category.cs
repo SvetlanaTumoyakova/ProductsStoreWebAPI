@@ -11,6 +11,8 @@ namespace ProductsStore.Models.Products
 
         public required string? Title { get; set; }
 
-        public Guid ParentId { get; set; }
+        [Column("parent_id")]
+        public Guid? ParentId { get; set; }
+        public Category? Parent { get; set; }
     }
 }

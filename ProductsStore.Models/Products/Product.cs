@@ -18,7 +18,7 @@ namespace ProductsStore.Models.Products
 
         public required double? Price { get; set; }
 
-        [Column("categoty_id")]
+        [Column("category_id")]
         public Guid CategoryID { get; set; }
         public required Category Category { get; set; }
 
