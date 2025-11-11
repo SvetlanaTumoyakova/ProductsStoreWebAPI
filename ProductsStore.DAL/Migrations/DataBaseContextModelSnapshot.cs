@@ -130,7 +130,7 @@ namespace ProductsStore.DAL.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<Guid>("ParentId")
+                    b.Property<Guid?>("ParentId")
                         .HasColumnType("uuid")
                         .HasColumnName("parent_id");
 
@@ -140,6 +140,9 @@ namespace ProductsStore.DAL.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_categories");
+
+                    b.HasIndex("ParentId")
+                        .HasDatabaseName("ix_categories_parent_id");
 
                     b.ToTable("categories", (string)null);
                 });
@@ -153,7 +156,7 @@ namespace ProductsStore.DAL.Migrations
 
                     b.Property<Guid>("CategoryID")
                         .HasColumnType("uuid")
-                        .HasColumnName("categoty_id");
+                        .HasColumnName("category_id");
 
                     b.Property<int?>("Count")
                         .HasColumnType("integer")
@@ -171,7 +174,7 @@ namespace ProductsStore.DAL.Migrations
                         .HasName("pk_products");
 
                     b.HasIndex("CategoryID")
-                        .HasDatabaseName("ix_products_categoty_id");
+                        .HasDatabaseName("ix_products_category_id");
 
                     b.ToTable("products", (string)null);
                 });
@@ -237,9 +240,10 @@ namespace ProductsStore.DAL.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("password");
+                        .HasColumnName("password_hash");
 
                     b.Property<Guid>("PersonID")
                         .HasColumnType("uuid")
@@ -251,7 +255,8 @@ namespace ProductsStore.DAL.Migrations
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
                         .HasColumnName("user_name");
 
                     b.Property<Guid>("UserRoleId")
@@ -362,6 +367,16 @@ namespace ProductsStore.DAL.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ProductsStore.Models.Products.Category", b =>
+                {
+                    b.HasOne("ProductsStore.Models.Products.Category", "Parent")
+                        .WithMany()
+                        .HasForeignKey("ParentId")
+                        .HasConstraintName("fk_categories_categories_parent_id");
+
+                    b.Navigation("Parent");
+                });
+
             modelBuilder.Entity("ProductsStore.Models.Products.Product", b =>
                 {
                     b.HasOne("ProductsStore.Models.Products.Category", "Category")
@@ -369,7 +384,7 @@ namespace ProductsStore.DAL.Migrations
                         .HasForeignKey("CategoryID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_products_categories_categoty_id");
+                        .HasConstraintName("fk_products_categories_category_id");
 
                     b.Navigation("Category");
                 });

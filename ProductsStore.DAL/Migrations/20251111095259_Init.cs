@@ -17,11 +17,16 @@ namespace ProductsStore.DAL.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     title = table.Column<string>(type: "text", nullable: true),
-                    parent_id = table.Column<Guid>(type: "uuid", nullable: false)
+                    parent_id = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_categories", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_categories_categories_parent_id",
+                        column: x => x.parent_id,
+                        principalTable: "categories",
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -73,14 +78,14 @@ namespace ProductsStore.DAL.Migrations
                     name = table.Column<string>(type: "text", nullable: true),
                     count = table.Column<int>(type: "integer", nullable: true),
                     price = table.Column<double>(type: "double precision", nullable: true),
-                    categoty_id = table.Column<Guid>(type: "uuid", nullable: false)
+                    category_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_products", x => x.id);
                     table.ForeignKey(
-                        name: "fk_products_categories_categoty_id",
-                        column: x => x.categoty_id,
+                        name: "fk_products_categories_category_id",
+                        column: x => x.category_id,
                         principalTable: "categories",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -91,8 +96,8 @@ namespace ProductsStore.DAL.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    user_name = table.Column<string>(type: "text", nullable: false),
-                    password = table.Column<string>(type: "text", nullable: true),
+                    user_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    password_hash = table.Column<string>(type: "text", nullable: false),
                     person_id = table.Column<Guid>(type: "uuid", nullable: false),
                     role_id = table.Column<Guid>(type: "uuid", nullable: false),
                     user_role_id = table.Column<Guid>(type: "uuid", nullable: false)
@@ -239,6 +244,11 @@ namespace ProductsStore.DAL.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_categories_parent_id",
+                table: "categories",
+                column: "parent_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_order_products_products_id",
                 table: "OrderProducts",
                 column: "products_id");
@@ -249,9 +259,9 @@ namespace ProductsStore.DAL.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_products_categoty_id",
+                name: "ix_products_category_id",
                 table: "products",
-                column: "categoty_id");
+                column: "category_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_user_person_id",
