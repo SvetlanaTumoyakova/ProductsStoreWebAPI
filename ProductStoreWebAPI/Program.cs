@@ -54,7 +54,18 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "Products API", Version = "v1" });
 });
 
+builder.Services.AddCors(options => {
+    options.AddPolicy("AllowLocalhost", builder => {
+        builder.WithOrigins("http://localhost:5173")
+               .AllowAnyHeader()
+               .AllowAnyMethod()
+               .AllowCredentials();
+    });
+});
+
 var app = builder.Build();
+
+app.UseCors("AllowLocalhost");
 
 var staticFolder = Path.Combine(app.Environment.ContentRootPath, "wwwroot", "static");
 if (!Directory.Exists(staticFolder))
