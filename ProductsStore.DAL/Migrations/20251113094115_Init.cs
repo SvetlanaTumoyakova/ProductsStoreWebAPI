@@ -46,20 +46,7 @@ namespace ProductsStore.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "product_attributes",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
-                    title = table.Column<string>(type: "text", nullable: true),
-                    content = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_product_attributes", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "user_role",
+                name: "user_roles",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -67,7 +54,7 @@ namespace ProductsStore.DAL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_user_role", x => x.id);
+                    table.PrimaryKey("pk_user_roles", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -78,7 +65,8 @@ namespace ProductsStore.DAL.Migrations
                     name = table.Column<string>(type: "text", nullable: true),
                     count = table.Column<int>(type: "integer", nullable: true),
                     price = table.Column<double>(type: "double precision", nullable: true),
-                    category_id = table.Column<Guid>(type: "uuid", nullable: false)
+                    category_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    image_url = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -92,52 +80,47 @@ namespace ProductsStore.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "user",
+                name: "users",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     user_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     password_hash = table.Column<string>(type: "text", nullable: false),
                     person_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    role_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    user_role_id = table.Column<Guid>(type: "uuid", nullable: false)
+                    role_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_user", x => x.id);
+                    table.PrimaryKey("pk_users", x => x.id);
                     table.ForeignKey(
-                        name: "fk_user_persons_person_id",
+                        name: "fk_users_persons_person_id",
                         column: x => x.person_id,
                         principalTable: "persons",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_user_user_role_user_role_id",
-                        column: x => x.user_role_id,
-                        principalTable: "user_role",
+                        name: "fk_users_user_roles_role_id",
+                        column: x => x.role_id,
+                        principalTable: "user_roles",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AttributeProducts",
+                name: "product_attributes",
                 columns: table => new
                 {
-                    product_attributes_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    products_id = table.Column<Guid>(type: "uuid", nullable: false)
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    title = table.Column<string>(type: "text", nullable: true),
+                    content = table.Column<string>(type: "text", nullable: true),
+                    product_id = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_attribute_products", x => new { x.product_attributes_id, x.products_id });
+                    table.PrimaryKey("pk_product_attributes", x => x.id);
                     table.ForeignKey(
-                        name: "fk_attribute_products_product_attributes_product_attributes_id",
-                        column: x => x.product_attributes_id,
-                        principalTable: "product_attributes",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "fk_attribute_products_products_products_id",
-                        column: x => x.products_id,
+                        name: "fk_product_attributes_products_product_id",
+                        column: x => x.product_id,
                         principalTable: "products",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -154,9 +137,9 @@ namespace ProductsStore.DAL.Migrations
                 {
                     table.PrimaryKey("pk_carts", x => x.id);
                     table.ForeignKey(
-                        name: "fk_carts_user_user_id",
+                        name: "fk_carts_users_user_id",
                         column: x => x.user_id,
-                        principalTable: "user",
+                        principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -173,9 +156,9 @@ namespace ProductsStore.DAL.Migrations
                 {
                     table.PrimaryKey("pk_orders", x => x.id);
                     table.ForeignKey(
-                        name: "fk_orders_user_user_id",
+                        name: "fk_orders_users_user_id",
                         column: x => x.user_id,
-                        principalTable: "user",
+                        principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -229,11 +212,6 @@ namespace ProductsStore.DAL.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "ix_attribute_products_products_id",
-                table: "AttributeProducts",
-                column: "products_id");
-
-            migrationBuilder.CreateIndex(
                 name: "ix_cart_products_products_id",
                 table: "CartProducts",
                 column: "products_id");
@@ -259,27 +237,29 @@ namespace ProductsStore.DAL.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_product_attributes_product_id",
+                table: "product_attributes",
+                column: "product_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_products_category_id",
                 table: "products",
                 column: "category_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_user_person_id",
-                table: "user",
+                name: "ix_users_person_id",
+                table: "users",
                 column: "person_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_user_user_role_id",
-                table: "user",
-                column: "user_role_id");
+                name: "ix_users_role_id",
+                table: "users",
+                column: "role_id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "AttributeProducts");
-
             migrationBuilder.DropTable(
                 name: "CartProducts");
 
@@ -299,7 +279,7 @@ namespace ProductsStore.DAL.Migrations
                 name: "products");
 
             migrationBuilder.DropTable(
-                name: "user");
+                name: "users");
 
             migrationBuilder.DropTable(
                 name: "categories");
@@ -308,7 +288,7 @@ namespace ProductsStore.DAL.Migrations
                 name: "persons");
 
             migrationBuilder.DropTable(
-                name: "user_role");
+                name: "user_roles");
         }
     }
 }

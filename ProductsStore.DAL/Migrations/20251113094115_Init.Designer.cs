@@ -12,7 +12,7 @@ using ProductsStore.DAL;
 namespace ProductsStore.DAL.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    [Migration("20251111095259_Init")]
+    [Migration("20251113094115_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -61,25 +61,6 @@ namespace ProductsStore.DAL.Migrations
                         .HasDatabaseName("ix_order_products_products_id");
 
                     b.ToTable("OrderProducts", (string)null);
-                });
-
-            modelBuilder.Entity("ProductProductAttributes", b =>
-                {
-                    b.Property<Guid>("ProductAttributesId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("product_attributes_id");
-
-                    b.Property<Guid>("ProductsId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("products_id");
-
-                    b.HasKey("ProductAttributesId", "ProductsId")
-                        .HasName("pk_attribute_products");
-
-                    b.HasIndex("ProductsId")
-                        .HasDatabaseName("ix_attribute_products_products_id");
-
-                    b.ToTable("AttributeProducts", (string)null);
                 });
 
             modelBuilder.Entity("ProductsStore.Models.Carts.Cart", b =>
@@ -165,6 +146,10 @@ namespace ProductsStore.DAL.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("count");
 
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("text")
+                        .HasColumnName("image_url");
+
                     b.Property<string>("Name")
                         .HasColumnType("text")
                         .HasColumnName("name");
@@ -193,12 +178,19 @@ namespace ProductsStore.DAL.Migrations
                         .HasColumnType("text")
                         .HasColumnName("content");
 
+                    b.Property<Guid>("ProductID")
+                        .HasColumnType("uuid")
+                        .HasColumnName("product_id");
+
                     b.Property<string>("Title")
                         .HasColumnType("text")
                         .HasColumnName("title");
 
                     b.HasKey("Id")
                         .HasName("pk_product_attributes");
+
+                    b.HasIndex("ProductID")
+                        .HasDatabaseName("ix_product_attributes_product_id");
 
                     b.ToTable("product_attributes", (string)null);
                 });
@@ -262,20 +254,16 @@ namespace ProductsStore.DAL.Migrations
                         .HasColumnType("character varying(256)")
                         .HasColumnName("user_name");
 
-                    b.Property<Guid>("UserRoleId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_role_id");
-
                     b.HasKey("Id")
-                        .HasName("pk_user");
+                        .HasName("pk_users");
 
                     b.HasIndex("PersonID")
-                        .HasDatabaseName("ix_user_person_id");
+                        .HasDatabaseName("ix_users_person_id");
 
-                    b.HasIndex("UserRoleId")
-                        .HasDatabaseName("ix_user_user_role_id");
+                    b.HasIndex("RoleID")
+                        .HasDatabaseName("ix_users_role_id");
 
-                    b.ToTable("user", (string)null);
+                    b.ToTable("users", (string)null);
                 });
 
             modelBuilder.Entity("ProductsStore.Models.Users.UserRole", b =>
@@ -290,9 +278,9 @@ namespace ProductsStore.DAL.Migrations
                         .HasColumnName("title");
 
                     b.HasKey("Id")
-                        .HasName("pk_user_role");
+                        .HasName("pk_user_roles");
 
-                    b.ToTable("user_role", (string)null);
+                    b.ToTable("user_roles", (string)null);
                 });
 
             modelBuilder.Entity("CartProduct", b =>
@@ -329,23 +317,6 @@ namespace ProductsStore.DAL.Migrations
                         .HasConstraintName("fk_order_products_products_products_id");
                 });
 
-            modelBuilder.Entity("ProductProductAttributes", b =>
-                {
-                    b.HasOne("ProductsStore.Models.Products.ProductAttributes", null)
-                        .WithMany()
-                        .HasForeignKey("ProductAttributesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_attribute_products_product_attributes_product_attributes_id");
-
-                    b.HasOne("ProductsStore.Models.Products.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_attribute_products_products_products_id");
-                });
-
             modelBuilder.Entity("ProductsStore.Models.Carts.Cart", b =>
                 {
                     b.HasOne("ProductsStore.Models.Users.User", "User")
@@ -353,7 +324,7 @@ namespace ProductsStore.DAL.Migrations
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_carts_user_user_id");
+                        .HasConstraintName("fk_carts_users_user_id");
 
                     b.Navigation("User");
                 });
@@ -365,7 +336,7 @@ namespace ProductsStore.DAL.Migrations
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_orders_user_user_id");
+                        .HasConstraintName("fk_orders_users_user_id");
 
                     b.Navigation("User");
                 });
@@ -392,6 +363,18 @@ namespace ProductsStore.DAL.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("ProductsStore.Models.Products.ProductAttributes", b =>
+                {
+                    b.HasOne("ProductsStore.Models.Products.Product", "Product")
+                        .WithMany("ProductAttributes")
+                        .HasForeignKey("ProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_product_attributes_products_product_id");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("ProductsStore.Models.Users.User", b =>
                 {
                     b.HasOne("ProductsStore.Models.Users.Person", "Person")
@@ -399,18 +382,23 @@ namespace ProductsStore.DAL.Migrations
                         .HasForeignKey("PersonID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_user_persons_person_id");
+                        .HasConstraintName("fk_users_persons_person_id");
 
-                    b.HasOne("ProductsStore.Models.Users.UserRole", "UserRole")
+                    b.HasOne("ProductsStore.Models.Users.UserRole", "Role")
                         .WithMany()
-                        .HasForeignKey("UserRoleId")
+                        .HasForeignKey("RoleID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_user_user_role_user_role_id");
+                        .HasConstraintName("fk_users_user_roles_role_id");
 
                     b.Navigation("Person");
 
-                    b.Navigation("UserRole");
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("ProductsStore.Models.Products.Product", b =>
+                {
+                    b.Navigation("ProductAttributes");
                 });
 #pragma warning restore 612, 618
         }
