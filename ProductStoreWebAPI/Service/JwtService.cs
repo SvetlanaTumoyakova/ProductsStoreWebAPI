@@ -1,16 +1,13 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using ProductsStore.Models.Users;
+using ProductsStore.WebAPI.Service.Interface;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
 namespace ProductsStore.WebAPI.Service
 {
-    public interface IJwtService
-    {
-        string GenerateToken(User user);
-    }
     public class JwtService : IJwtService
     {
         private readonly JwtSettings _jwtSettings;
@@ -27,7 +24,7 @@ namespace ProductsStore.WebAPI.Service
             {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Email, user.UserName),
-            new Claim(ClaimTypes.Role, user.UserRole.Title)
+            new Claim(ClaimTypes.Role, user.Role.Title)
         };
 
             var token = new JwtSecurityToken(

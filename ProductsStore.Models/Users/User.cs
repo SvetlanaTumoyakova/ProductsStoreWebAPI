@@ -27,7 +27,7 @@ namespace ProductsStore.Models.Users
         [Column("role_id")]
         public Guid RoleID { get; set; }
 
-        public required UserRole UserRole { get; set; }
+        public required UserRole Role { get; set; }
 
     }
 }

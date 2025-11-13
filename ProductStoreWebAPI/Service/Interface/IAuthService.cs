@@ -6,5 +6,6 @@ namespace ProductsStore.WebAPI.Service.Interface
     {
         string HashPassword(string password);
         string GenerateJwtToken(User user);
+        bool VerifyPassword(string password, string hash);
     }
 }

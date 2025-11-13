@@ -1,6 +1,7 @@
 @ProductStoreWebAPI_HostAddress = http://localhost:5171
 
-GET {{ProductStoreWebAPI_HostAddress}}/weatherforecast/
+GET {{ProductStoreWebAPI_HostAddress}}/productstore/
 Accept: application/json
 
 ###
+

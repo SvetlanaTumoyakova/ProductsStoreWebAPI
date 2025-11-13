@@ -46,7 +46,7 @@ namespace ProductsStore.WebAPI.Providers
                 UserName = dto.UserName,
                 PasswordHash = dto.Password,
                 Person = person,
-                UserRole = defaultRole
+                Role = defaultRole
             };
 
             _context.Users.Add(user);
@@ -60,7 +60,7 @@ namespace ProductsStore.WebAPI.Providers
         {
             return await _context.Users
                 .Include(u => u.Person)
-                .Include(u => u.UserRole)
+                .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.UserName == username);
         }
 
