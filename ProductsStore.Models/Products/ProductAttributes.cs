@@ -12,6 +12,8 @@ namespace ProductsStore.Models.Products
         public required string? Title { get; set; }
         public required string? Content { get; set; }
 
-        public required ICollection<Product> Products { get; set; }
+        [Column("product_id")]
+        public Guid ProductID { get; set; }
+        public Product Product { get; set; }
     }
 }

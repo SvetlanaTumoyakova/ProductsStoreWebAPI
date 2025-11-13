@@ -1,37 +1,57 @@
-﻿using ProductsStore.DAL;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ProductsStore.DAL;
 using ProductsStore.Models.Products;
+using ProductsStore.WebAPI.DTO.Product;
 
 namespace ProductsStore.WebAPI.Providers
 {
     public class ProductProvider
     {
         private readonly DataBaseContext _dataBaseContext;
-        public ProductProvider(DataBaseContext dataBaseContext)
+        private readonly IWebHostEnvironment _env;
+        public ProductProvider(DataBaseContext dataBaseContext, IWebHostEnvironment env)
         {
             _dataBaseContext = dataBaseContext;
+            _env = env;
         }
 
-        //public async Task<List<Product>> GetProducts()
-        //{
-        //    var products = await _dataBaseContext.Products.Include(p => p.publisherHouse).ToListAsync();
-        //    return products;
-        //}
+        public async Task<List<Product>> GetProducts()
+        {
+            var products = await _dataBaseContext.Products
+                .Include(p => p.Category)
+                .Include(p => p.ProductAttributes)
+                .ToListAsync();
 
-        //public async Task<List<Product>> Search(string searchString)
-        //{
-        //    List<Product> products;
-        //    if (searchString != null)
-        //    {
-        //        products = await _dataBaseContext.Products
-        //             .Where(b => b.BookTitle.ToLower().Contains(searchString.ToLower()) || b.Author.ToLower().Contains(searchString.ToLower()))
-        //             .Include(p => p.publisherHouse)
-        //             .ToListAsync();
-        //    }
-        //    else
-        //    {
-        //        products = await _dataBaseContext.Products.Include(p => p.publisherHouse).ToListAsync();
-        //    }
-        //    return products;
-        //}
+            return products;
+        }
+        public async Task<Product> GetProductById(Guid id)
+        {
+            var product = await _dataBaseContext.Products
+                .Include(p => p.Category)
+                .Include(p => p.ProductAttributes)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            return product;
+        }
+
+        public async Task<List<Product>> SearchProductsByNameAsync(string? search)
+        {
+            if (string.IsNullOrWhiteSpace(search))
+            {
+                return await GetProducts();
+            }
+
+            //ILike: поиск без учета регистра
+            var pattern = $"%{search}%";
+            var products = await _dataBaseContext.Products
+                .Where(p => EF.Functions.ILike(p.Name, pattern))
+                .Include(p => p.Category)
+                .Include(p => p.ProductAttributes)
+                .ToListAsync();
+
+            return products;
+        }
+
     }
 }

@@ -22,7 +22,10 @@ namespace ProductsStore.Models.Products
         public Guid CategoryID { get; set; }
         public required Category Category { get; set; }
 
-        [JsonIgnore]
+        //пример, "/static/filename.jpg"
+        [Column("image_url")]
+        public string? ImageUrl { get; set; }
+
         public virtual ICollection<ProductAttributes> ProductAttributes { get; set; } = new List<ProductAttributes>();
 
         [JsonIgnore]

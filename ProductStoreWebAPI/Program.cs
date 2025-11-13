@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using ProductsStore.DAL;
@@ -18,6 +19,10 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddScoped<IAuthProvider, AuthProvider>();
+builder.Services.AddScoped<ProductProvider>();
+builder.Services.AddScoped<CartProvider>();
+builder.Services.AddScoped<OrderProvider>();
+
 builder.Services.AddControllers();
 
 
@@ -50,6 +55,18 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+
+var staticFolder = Path.Combine(app.Environment.ContentRootPath, "wwwroot", "static");
+if (!Directory.Exists(staticFolder))
+{
+    Directory.CreateDirectory(staticFolder);
+}
+app.UseStaticFiles(); // serves wwwroot
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(staticFolder),
+    RequestPath = "/static"
+});
 
 app.UseHttpsRedirection();
 

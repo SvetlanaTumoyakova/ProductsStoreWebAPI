@@ -24,10 +24,7 @@ namespace ProductsStore.DAL
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Product>()
-                .HasMany(c => c.ProductAttributes)
-                .WithMany(p => p.Products)
-                .UsingEntity(j => j.ToTable("AttributeProducts")); // Имя таблицы для промежуточной связи
+            // таблицы для промежуточной связи
 
             modelBuilder.Entity<Cart>()
                 .HasMany(c => c.Products)
