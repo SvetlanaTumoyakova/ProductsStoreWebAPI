@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using ProductsStore.DAL;
 using ProductsStore.Models.Products;
-using ProductsStore.WebAPI.DTO.Product;
 
 namespace ProductsStore.WebAPI.Providers
 {
