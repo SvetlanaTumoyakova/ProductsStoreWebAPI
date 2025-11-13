@@ -8,11 +8,11 @@ namespace ProductsStore.WebAPI.Providers
 {
     public class AuthProvider : IAuthProvider
     {
-        private readonly DataBaseContext _context;
+        private readonly DataBaseContext _dataBaseContext;
 
-        public AuthProvider(DataBaseContext context)
+        public AuthProvider(DataBaseContext dataBaseContext)
         {
-            _context = context;
+            _dataBaseContext = dataBaseContext;
         }
 
         public async Task<User> RegisterUserAsync(RegisterDto dto)
@@ -21,13 +21,13 @@ namespace ProductsStore.WebAPI.Providers
             if (await IsUsernameTakenAsync(dto.UserName))
                 throw new InvalidOperationException("Пользователь с таким email уже существует");
 
-            var defaultRole = await _context.UserRoles
+            var defaultRole = await _dataBaseContext.UserRoles
                 .FirstOrDefaultAsync(r => r.Title == "User");
 
             if (defaultRole == null)
             {
                 defaultRole = new UserRole { Title = "User" };
-                await _context.UserRoles.AddAsync(defaultRole);
+                await _dataBaseContext.UserRoles.AddAsync(defaultRole);
             }
 
             var person = new Person
@@ -39,7 +39,7 @@ namespace ProductsStore.WebAPI.Providers
                 Phone = dto.Phone
             };
 
-            await _context.Persons.AddAsync(person);
+            await _dataBaseContext.Persons.AddAsync(person);
 
             var user = new User
             {
@@ -49,16 +49,16 @@ namespace ProductsStore.WebAPI.Providers
                 Role = defaultRole
             };
 
-            _context.Users.Add(user);
+            _dataBaseContext.Users.Add(user);
 
-            await _context.SaveChangesAsync();
+            await _dataBaseContext.SaveChangesAsync();
 
             return user;
         }
 
         public async Task<User?> GetUserByUsernameAsync(string username)
         {
-            return await _context.Users
+            return await _dataBaseContext.Users
                 .Include(u => u.Person)
                 .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.UserName == username);
@@ -72,7 +72,7 @@ namespace ProductsStore.WebAPI.Providers
         /// <returns>True, если email уже зарегистрирован; иначе false.</returns>
         public async Task<bool> IsUsernameTakenAsync(string username)
         {
-            return await _context.Users.AnyAsync(u => u.UserName == username);
+            return await _dataBaseContext.Users.AnyAsync(u => u.UserName == username);
         }
     }
 }
