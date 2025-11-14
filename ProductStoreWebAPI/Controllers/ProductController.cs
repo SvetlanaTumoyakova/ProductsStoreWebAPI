@@ -24,6 +24,13 @@ namespace ProductsStore.WebAPI.Controllers
             return Ok(products);
         }
 
+        [HttpGet("random")]
+        public async Task<IActionResult> GetRandom()
+        {
+            var randomProducts = await _productProvider.GetRandomProducts();
+            return Ok(randomProducts);
+        }
+
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> Get(Guid id)
         {

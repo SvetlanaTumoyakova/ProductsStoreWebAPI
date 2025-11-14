@@ -45,14 +45,14 @@ namespace ProductsStore.WebAPI.Providers
             return newCart.Entity;
         }
 
-        public async Task<Cart> AddToCart(User user, AddToCartDto cartDto)
+        public async Task<Cart> AddToCart(User user, Guid id)
         {
             try
             {
                 Cart savedCart = await this.GetCart(user.Id);
 
                 Product savedProduct = await _dataBaseContext.Products
-                                                             .Where(un => un.Id == cartDto.ProductId)
+                                                             .Where(un => un.Id == id)
                                                              .FirstAsync();
 
                 if (savedCart.Products.Any(un => un.Id == savedProduct.Id))
@@ -70,14 +70,14 @@ namespace ProductsStore.WebAPI.Providers
             }
         }
 
-        public async Task<Cart> DeleteFromCart(User user, DeleteFromCartDto cartDto)
+        public async Task<Cart> DeleteFromCart(User user, Guid id)
         {
             try
             {
                 Cart savedCart = await this.GetCart(user.Id);
 
                 Product savedProduct = await _dataBaseContext.Products
-                                                             .Where(un => un.Id == cartDto.ProductId)
+                                                             .Where(un => un.Id == id)
                                                              .FirstAsync();
                 if (savedCart.Products.Any(un => un.Id == savedProduct.Id))
                 {

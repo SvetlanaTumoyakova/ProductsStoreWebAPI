@@ -37,9 +37,9 @@ namespace ProductsStore.WebAPI.Controllers
             return Ok(cart);
         }
 
-        [HttpPost("add")]
+        [HttpPost("{id:guid}")]
         [Authorize]
-        public async Task<IActionResult> AddToCart([FromBody] AddToCartDto dto)
+        public async Task<IActionResult> AddToCart(Guid id)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -53,7 +53,7 @@ namespace ProductsStore.WebAPI.Controllers
 
             try
             {
-                var cart = await _cartProvider.AddToCart(user, dto);
+                var cart = await _cartProvider.AddToCart(user, id);
                 return Ok(cart);
             }
             catch (Exception ex)
@@ -62,9 +62,9 @@ namespace ProductsStore.WebAPI.Controllers
             }
         }
 
-        [HttpPost("remove")] //to do: переделать через id
+        [HttpDelete("{id:guid}")]
         [Authorize]
-        public async Task<IActionResult> RemoveFromCart([FromBody] DeleteFromCartDto dto)
+        public async Task<IActionResult> RemoveFromCart(Guid id)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -78,7 +78,7 @@ namespace ProductsStore.WebAPI.Controllers
 
             try
             {
-                var cart = await _cartProvider.DeleteFromCart(user, dto);
+                var cart = await _cartProvider.DeleteFromCart(user, id);
                 return Ok(cart);
             }
             catch (Exception ex)
@@ -87,7 +87,7 @@ namespace ProductsStore.WebAPI.Controllers
             }
         }
 
-        [HttpPost("clear")]
+        [HttpDelete("clear")]
         [Authorize]
         public async Task<IActionResult> ClearCart()
         {

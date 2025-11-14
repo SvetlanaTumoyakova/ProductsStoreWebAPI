@@ -48,7 +48,6 @@ namespace ProductsStore.WebAPI.Controllers
             {
                 return StatusCode(500, new { message = "Ошибка при создании заказа", error = ex.Message });
             }
-         
         }
 
         // GET: api/order?page=1

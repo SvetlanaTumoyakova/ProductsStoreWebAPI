@@ -9,6 +9,8 @@ namespace ProductsStore.WebAPI.Providers
     {
         private readonly DataBaseContext _dataBaseContext;
         private readonly IWebHostEnvironment _env;
+
+        public const int count = 10;
         public ProductProvider(DataBaseContext dataBaseContext, IWebHostEnvironment env)
         {
             _dataBaseContext = dataBaseContext;
@@ -19,16 +21,28 @@ namespace ProductsStore.WebAPI.Providers
         {
             var products = await _dataBaseContext.Products
                 .Include(p => p.Category)
-                .Include(p => p.ProductAttributes)
+                //.Include(p => p.ProductAttributes)
                 .ToListAsync();
 
             return products;
+        }
+
+        public async Task<List<Product>> GetRandomProducts()
+        {
+            var randomProducts = await _dataBaseContext.Products
+                .Include(p => p.Category)
+                //.Include(p => p.ProductAttributes)
+                .OrderBy(r => EF.Functions.Random())
+                .Take(count)
+                .ToListAsync();
+
+            return randomProducts;
         }
         public async Task<Product> GetProductById(Guid id)
         {
             var product = await _dataBaseContext.Products
                 .Include(p => p.Category)
-                .Include(p => p.ProductAttributes)
+                //.Include(p => p.ProductAttributes)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             return product;
@@ -46,7 +60,7 @@ namespace ProductsStore.WebAPI.Providers
             var products = await _dataBaseContext.Products
                 .Where(p => EF.Functions.ILike(p.Name, pattern))
                 .Include(p => p.Category)
-                .Include(p => p.ProductAttributes)
+                //.Include(p => p.ProductAttributes)
                 .ToListAsync();
 
             return products;
