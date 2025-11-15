@@ -18,9 +18,9 @@ namespace ProductsStore.WebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery(Name = "category_id")] Guid? category_id)
         {
-            var products = await _productProvider.GetProducts();
+            var products = await _productProvider.GetProducts(category_id);
             return Ok(products);
         }
 
@@ -42,10 +42,17 @@ namespace ProductsStore.WebAPI.Controllers
         }
 
         [HttpGet("search")]
-        public async Task<IActionResult> Search([FromQuery(Name = "q")] string? q)
+        public async Task<IActionResult> Search([FromQuery(Name = "q")] string? q, [FromQuery(Name = "category_id")] Guid? category_id)
         {
-            var products = await _productProvider.SearchProductsByNameAsync(q);
+            var products = await _productProvider.SearchProductsByNameAsync(q, category_id);
             return Ok(products);
+        }
+
+        [HttpGet("categories")]
+        public async Task<IActionResult> GetCategories()
+        {
+            var productCategories = await _productProvider.GetProductCategories();
+            return Ok(productCategories);
         }
 
     }

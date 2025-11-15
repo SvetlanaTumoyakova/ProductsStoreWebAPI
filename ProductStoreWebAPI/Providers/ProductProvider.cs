@@ -17,12 +17,16 @@ namespace ProductsStore.WebAPI.Providers
             _env = env;
         }
 
-        public async Task<List<Product>> GetProducts()
+        public async Task<List<Product>> GetProducts(Guid? category_id)
         {
-            var products = await _dataBaseContext.Products
-                .Include(p => p.Category)
-                //.Include(p => p.ProductAttributes)
-                .ToListAsync();
+            var query = _dataBaseContext.Products.AsQueryable();
+
+            if (category_id != null)
+            {
+                query = query.Where(p => p.CategoryID == category_id.Value);
+            }
+                
+            var products = await query.ToListAsync();
 
             return products;
         }
@@ -31,7 +35,7 @@ namespace ProductsStore.WebAPI.Providers
         {
             var randomProducts = await _dataBaseContext.Products
                 .Include(p => p.Category)
-                //.Include(p => p.ProductAttributes)
+                .Include(p => p.ProductAttributes)
                 .OrderBy(r => EF.Functions.Random())
                 .Take(count)
                 .ToListAsync();
@@ -42,28 +46,42 @@ namespace ProductsStore.WebAPI.Providers
         {
             var product = await _dataBaseContext.Products
                 .Include(p => p.Category)
-                //.Include(p => p.ProductAttributes)
+                .Include(p => p.ProductAttributes)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             return product;
         }
 
-        public async Task<List<Product>> SearchProductsByNameAsync(string? search)
+        public async Task<List<Product>> SearchProductsByNameAsync(string? search, Guid? category_id)
         {
             if (string.IsNullOrWhiteSpace(search))
             {
-                return await GetProducts();
+                return await GetProducts(category_id);
             }
 
             //ILike: поиск без учета регистра
             var pattern = $"%{search}%";
-            var products = await _dataBaseContext.Products
+
+            var query = _dataBaseContext.Products.AsQueryable();
+
+            if (category_id != null)
+            {
+                query = query.Where(p => p.CategoryID == category_id.Value);
+            }
+
+            var products = await query
                 .Where(p => EF.Functions.ILike(p.Name, pattern))
-                .Include(p => p.Category)
-                //.Include(p => p.ProductAttributes)
                 .ToListAsync();
 
             return products;
+        }
+
+        public async Task<List<Category>> GetProductCategories()
+        {
+            var categories = await _dataBaseContext.Categories
+                .ToListAsync();
+
+            return categories;
         }
 
     }
