@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using ProductsStore.DAL;
 using ProductsStore.Models.Products;
+using ProductsStore.WebAPI.DTO.Product;
+using System.Linq;
 
 namespace ProductsStore.WebAPI.Providers
 {
@@ -35,19 +37,31 @@ namespace ProductsStore.WebAPI.Providers
         {
             var randomProducts = await _dataBaseContext.Products
                 .Include(p => p.Category)
-                .Include(p => p.ProductAttributes)
                 .OrderBy(r => EF.Functions.Random())
                 .Take(count)
                 .ToListAsync();
 
             return randomProducts;
         }
-        public async Task<Product> GetProductById(Guid id)
+        public async Task<ProductDto> GetProductById(Guid id)
         {
             var product = await _dataBaseContext.Products
                 .Include(p => p.Category)
                 .Include(p => p.ProductAttributes)
-                .FirstOrDefaultAsync(p => p.Id == id);
+                .Where(p => p.Id == id)
+                .Select(p => new ProductDto(p.Id, p.Name, p.Count, p.Price,
+                    new ProductCategoryDto(
+                        p.Category.Id,
+                        p.Category.Title
+                    ),
+                    p.ImageUrl, 
+                    p.ProductAttributes.Select(pa => new ProductAttributesDto(
+                            pa.Id,
+                            pa.Title,
+                            pa.Content
+                    ))
+                ))
+                .FirstOrDefaultAsync();
 
             return product;
         }
